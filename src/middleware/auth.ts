@@ -17,7 +17,7 @@ declare global {
   }
 }
 
-export function authenticate(req: Request, res: Response, next: NextFunction) {
+export default function authenticate(req: Request, res: Response, next: NextFunction) {
   if (!req.headers.authorization) {
     return res.status(401).json({
       status: 'error',

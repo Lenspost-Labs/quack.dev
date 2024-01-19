@@ -13,6 +13,7 @@ datasource db {
 model user {
   id       String  @id @default(uuid())
   username String? @unique
+  public_address String? @unique
   auth     auth[]
 }
 
@@ -20,5 +21,6 @@ model auth {
   id         Int    @id @default(autoincrement())
   userId     String @unique
   secret_key String @unique
+  public_address String @unique
   user       user   @relation(fields: [userId], references: [id])
 }

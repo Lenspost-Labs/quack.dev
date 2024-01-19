@@ -3,12 +3,16 @@ require('dotenv').config();
 
 // routes
 import auth from "./routes/auth";
+import user from "./routes/user";
+
+// middleware
+import authMiddleware from './middleware/auth';
 
 const PORT = process.env.PORT || 3000;
-
 const app = express();
 
 app.use('/auth', auth);
+app.use('/user', user);
 
 app.listen(PORT);
 
