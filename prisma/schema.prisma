@@ -1,26 +1,33 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DATABASE_URL")
 }
 
 model user {
-  id       String  @id @default(uuid())
-  username String? @unique
-  public_address String? @unique
-  auth     auth[]
+  id             String          @id @default(uuid())
+  username       String?         @unique
+  public_address String?         @unique
+  auth           auth?
+  user_metadata  user_metadata[]
 }
 
 model auth {
-  id         Int    @id @default(autoincrement())
-  userId     String @unique
-  secret_key String @unique
+  id             Int    @id @default(autoincrement())
+  userId         String @unique
+  secret_key     String @unique
   public_address String @unique
-  user       user   @relation(fields: [userId], references: [id])
+  user           user   @relation(fields: [userId], references: [id])
+}
+
+model user_metadata {
+  id      String  @id @default(uuid())
+  user_id String
+  memo    String?
+  hasPaid Boolean @default(false)
+  user    user    @relation(fields: [user_id], references: [id])
 }

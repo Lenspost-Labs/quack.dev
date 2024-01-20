@@ -7,6 +7,7 @@ import {
 } from "@solana/web3.js";
 const crypto = require("crypto");
 import { createMemoInstruction } from "@solana/spl-memo";
+import redis from "../clients/redis"
 
 const DESTINATION_WALLET = process.env.DESTINATION_WALLET as string;
 
@@ -44,9 +45,11 @@ export const getSerializedTx = async (
       lamports: amountInLamports,
     })
   );
+  let uniqueCode = generateUniqueCode(fromPubkey);
   const memoIx = createMemoInstruction(
-    `Solcaster ${generateUniqueCode(fromPubkey)}`
+    `Solcaster ${uniqueCode}`
   );
+  await redis.set(fromPubkey, uniqueCode);
   tx.add(memoIx);
   tx.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
   tx.feePayer = sourceWallet;
