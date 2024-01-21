@@ -10,7 +10,6 @@ COPY package*.json ./
 # Install production dependencies (omit devDependencies)
 RUN npm install --only=production
 
-COPY .env .env
 # Copy the rest of your application code to the working directory
 COPY . .
 
