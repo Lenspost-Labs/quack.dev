@@ -6,6 +6,7 @@ import nacl from "tweetnacl";
 import bs58 from "bs58";
 import { generateJWT } from "../../utils/auth/generateJWT";
 import authenticate from "../../middleware/auth";
+import { userLogin, userLoginFirstTime } from "../../utils/events";
 
 const authRouter = Router();
 
@@ -54,6 +55,9 @@ authRouter.post("/", async (req, res) => {
             public_address: solana_address,
           },
         });
+        userLoginFirstTime(ownerData.id);
+      } else {
+        userLogin(ownerData.id);
       }
 
       let jwt = generateJWT({
@@ -77,6 +81,6 @@ authRouter.post("/", async (req, res) => {
 });
 
 authRouter.use("/login", loginRouter);
-authRouter.use("/register",authenticate, registerRouter);
+authRouter.use("/register", authenticate, registerRouter);
 
 export default authRouter;

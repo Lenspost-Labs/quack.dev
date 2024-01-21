@@ -41,6 +41,9 @@ CREATE UNIQUE INDEX "auth_secret_key_key" ON "auth"("secret_key");
 -- CreateIndex
 CREATE UNIQUE INDEX "auth_public_address_key" ON "auth"("public_address");
 
+-- CreateIndex
+CREATE UNIQUE INDEX "user_metadata_user_id_key" ON "user_metadata"("user_id");
+
 -- AddForeignKey
 ALTER TABLE "auth" ADD CONSTRAINT "auth_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 

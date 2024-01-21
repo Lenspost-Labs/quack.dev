@@ -1,6 +1,8 @@
 import redis from "../clients/redis";
 import prisma from "../clients/prisma";
 
+import { userPayed } from "../events";
+
 const updatePaidStatus = async (
   user_id: string,
   public_key: string,
@@ -11,6 +13,7 @@ const updatePaidStatus = async (
   console.log(user_id);
 
   if (user_memo === memo) {
+    userPayed(user_id);
     await prisma.user_metadata.upsert({
         where: {
             user_id: user_id
