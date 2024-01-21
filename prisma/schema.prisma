@@ -9,11 +9,11 @@ datasource db {
 }
 
 model user {
-  id             String          @id @default(uuid())
-  username       String?         @unique
-  public_address String?         @unique
+  id             String         @id @default(uuid())
+  username       String?        @unique
+  public_address String?        @unique
   auth           auth?
-  user_metadata  user_metadata[]
+  user_metadata  user_metadata?
 }
 
 model auth {
@@ -26,8 +26,7 @@ model auth {
 
 model user_metadata {
   id      String  @id @default(uuid())
-  user_id String
-  memo    String?
+  user_id String  @unique
   hasPaid Boolean @default(false)
   user    user    @relation(fields: [user_id], references: [id])
 }
