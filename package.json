@@ -26,7 +26,7 @@
     "web3": "^4.3.0"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && npx prisma generate",
     "start": "node dist/app.js",
     "dev": "nodemon src/app.ts"
   },
