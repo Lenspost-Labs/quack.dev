@@ -28,5 +28,8 @@ model user_metadata {
   id      String  @id @default(uuid())
   user_id String  @unique
   hasPaid Boolean @default(false)
+  fid     Int?
+  image   String? @default("https://api.dicebear.com/7.x/pixel-art/svg?seed={{user_id}}")
+  bio    String?
   user    user    @relation(fields: [user_id], references: [id])
 }

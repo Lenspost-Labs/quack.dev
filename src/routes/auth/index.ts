@@ -1,5 +1,4 @@
 import { Router } from "express";
-import loginRouter from "./login";
 import registerRouter from "./register";
 import prisma from "../../utils/clients/prisma";
 import nacl from "tweetnacl";
@@ -7,6 +6,7 @@ import bs58 from "bs58";
 import { generateJWT } from "../../utils/auth/generateJWT";
 import authenticate from "../../middleware/auth";
 import { userLogin, userLoginFirstTime } from "../../utils/events";
+import { getOrCreatePublicKey } from "../../utils/farcaster/generateKeypair";
 
 const authRouter = Router();
 
@@ -60,10 +60,13 @@ authRouter.post("/", async (req, res) => {
         userLogin(ownerData.id);
       }
 
+      let evm_add = await getOrCreatePublicKey(ownerData.id);
+
       let jwt = generateJWT({
         id: ownerData.id,
         usernamee: ownerData.username,
         public_address: ownerData.public_address,
+        evm_address: evm_add,
       });
 
       //   if (!user_id) sendLogin(ownerData.id, ownerData.username);
@@ -80,7 +83,6 @@ authRouter.post("/", async (req, res) => {
   }
 });
 
-authRouter.use("/login", loginRouter);
 authRouter.use("/register", authenticate, registerRouter);
 
 export default authRouter;
