@@ -4,8 +4,6 @@
   "main": "index.js",
   "license": "MIT",
   "devDependencies": {
-    "@types/compression": "^1.7.5",
-    "@types/cors": "^2.8.17",
     "nodemon": "^3.0.2",
     "prisma": "^5.8.1",
     "ts-node": "^10.9.2",
@@ -13,6 +11,8 @@
     "typescript": "^5.3.3"
   },
   "dependencies": {
+    "@types/compression": "^1.7.5",
+    "@types/cors": "^2.8.17",
     "@farcaster/hub-nodejs": "^0.10.20",
     "@farcaster/hub-web": "^0.7.2",
     "@noble/ed25519": "^1.7.0",
