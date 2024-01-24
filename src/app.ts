@@ -8,6 +8,7 @@ import user from "./routes/user";
 // middleware
 import authMiddleware from './middleware/auth';
 
+
 const PORT = process.env.PORT || 3000;
 const app = express();
 app.use(express.json());
