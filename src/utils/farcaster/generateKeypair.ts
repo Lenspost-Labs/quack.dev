@@ -13,7 +13,7 @@ export const getOrCreatePublicKey = async (userId: string) => {
   });
 
   if (!auth) {
-    const web3 = new Web3();
+    const web3 = new Web3(process.env.OP_RPC_URL);
 
     const account = web3.eth.accounts.create();
 
