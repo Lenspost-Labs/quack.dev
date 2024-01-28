@@ -2,6 +2,9 @@ import redis from "../clients/redis";
 import prisma from "../clients/prisma";
 
 import { userPayed } from "../events";
+import createAccount from "../farcaster/createAccount";
+import addSigner from "../farcaster/addSigner";
+import createCast from "./createCast";
 
 const updatePaidStatus = async (
   user_id: string,
@@ -10,22 +13,21 @@ const updatePaidStatus = async (
 ) => {
   let user_memo = await redis.get(public_key);
 
-  console.log(user_id);
-
   if (user_memo === memo) {
+    createAccount(user_id);
     userPayed(user_id);
     await prisma.user_metadata.upsert({
-        where: {
-            user_id: user_id
-        },
-        update: {
-            hasPaid: true
-        },
-        create: {
-            user_id: user_id,
-            hasPaid: true
-        }
-    })
+      where: {
+        user_id: user_id,
+      },
+      update: {
+        hasPaid: true,
+      },
+      create: {
+        user_id: user_id,
+        hasPaid: true,
+      },
+    });
   }
 };
 

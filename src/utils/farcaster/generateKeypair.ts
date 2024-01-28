@@ -5,7 +5,7 @@ import { createCipheriv, createDecipheriv } from "crypto";
 export const getOrCreatePublicKey = async (userId: string) => {
   let auth = await prisma.auth.findUnique({
     where: {
-      userId: userId,
+      user_id: userId,
     },
     select: {
       public_address: true,
@@ -51,7 +51,7 @@ export const getOrCreatePublicKey = async (userId: string) => {
 
     await prisma.auth.create({
       data: {
-        userId: userId,
+        user_id: userId,
         public_address: account.address,
         secret_key: encrypted_secret,
       },

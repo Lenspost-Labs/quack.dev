@@ -8,11 +8,21 @@ import getSerializedTx from "../../utils/solana/getSerializedTx";
 import checkTransactionStatus from "../../utils/solana/checkTransactionStatus";
 import getParsedTransaction from "../../utils/solana/getParsedTransaction";
 import updatePaidStatus from "../../utils/user/updatePaidStatus";
+import getAccountExists from "../../utils/user/getAccountExists";
 const router = Router();
 
 router.get("/pay", async (req, res) => {
   let user = req.user?.id;
   let publicKey = req.user?.public_address;
+
+  let accountExists = await getAccountExists(user as string);
+
+  if (accountExists) {
+    res.send({
+      message: "Account already exists",
+    });
+    return;
+  }
 
   let price = await getPriceInEth();
   let priceInSol = await getPriceInSol(price);
@@ -32,11 +42,20 @@ router.post("/pay", async (req, res) => {
   let publicKey = req.user?.public_address;
   let txSig = req.body.txSig;
 
-  let status = await checkTransactionStatus(txSig);
+  // let accountExists = await getAccountExists(user as string);
+
+  // if (accountExists) {
+  //   res.send({
+  //     message: "Account already exists",
+  //   });
+  //   return;
+  // }
+
+  // let status = await checkTransactionStatus(txSig);
+  let status = true;
 
   if (status) {
     let parsedTx = await getParsedTransaction(txSig);
-    console.log(parsedTx);
     await updatePaidStatus(
       user as string,
       publicKey as string,
