@@ -3,8 +3,7 @@ import prisma from "../clients/prisma";
 
 import { userPayed } from "../events";
 import createAccount from "../farcaster/createAccount";
-import addSigner from "../farcaster/addSigner";
-import createCast from "./createCast";
+
 
 const updatePaidStatus = async (
   user_id: string,
