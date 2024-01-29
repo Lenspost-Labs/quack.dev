@@ -14,6 +14,7 @@ const ACCOUNT_PRIVATE_KEY = bs58.decode(ACCOUNT_PRIVATE_KEY_BS58);
 const ed25519Signer = new NobleEd25519Signer(ACCOUNT_PRIVATE_KEY);
 
 const createCast = async (user_id: string, postData?: any) => {
+
   let user_data = await prisma.user_metadata.findUnique({
     where: {
       user_id: user_id,
@@ -23,13 +24,11 @@ const createCast = async (user_id: string, postData?: any) => {
     },
   });
 
-  if (user_data?.fid) {
+  if (user_data?.fid) { 
     const dataOptions = {
       fid: user_data.fid,
       network: FC_NETWORK,
     } as any;
-
-    console.log(typeof dataOptions.fid);
 
     const castResults = [];
     const cast = (await makeCastAdd(

@@ -15,9 +15,14 @@ import { bytesToHex, createPublicClient, createWalletClient, http } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { optimism } from "viem/chains";
 import prisma from "../clients/prisma";
+import bs58 from "bs58";
+
+const ACCOUNT_PRIVATE_KEY_BS58 = process.env.APP_ACCOUNT_PRIVATE_KEY as string;
+const ACCOUNT_PRIVATE_KEY = bs58.decode(ACCOUNT_PRIVATE_KEY_BS58);
+const ed25519Signer = new NobleEd25519Signer(ACCOUNT_PRIVATE_KEY);
 
 const APP_FID = BigInt(process.env.APP_FID as string);
-const addSigner = async (user_id: string) => {
+const refreshSigner = async (user_id: string) => {
   const APP_PRIVATE_KEY = process.env.APP_PRIVATE_KEY as `0x${string}`;
   const app = privateKeyToAccount(APP_PRIVATE_KEY);
   const appKey = new ViemLocalEip712Signer(app as any);
@@ -41,23 +46,21 @@ const addSigner = async (user_id: string) => {
     },
   });
 
-  const alice = privateKeyToAccount(auth?.secret_key as `0x${string}`) as any;
-  const aliceAccountKey = new ViemLocalEip712Signer(alice);
-  console.log("Alice:", alice.address);
+  const user = privateKeyToAccount(auth?.secret_key as `0x${string}`) as any;
+  const aliceAccountKey = new ViemLocalEip712Signer(user);
+  console.log("Alice:", user.address);
 
   const getDeadline = () => {
     const now = Math.floor(Date.now() / 1000);
     const oneHour = 60 * 60;
-    return BigInt(now + oneHour);
+    const oneDay = 60 * 60 * 24;
+    return BigInt(now + oneDay);
   };
 
   const deadline = getDeadline();
 
-  const privateKeyBytes = ed.utils.randomPrivateKey();
-  const accountKey = new NobleEd25519Signer(privateKeyBytes);
-
   let accountPubKey = new Uint8Array();
-  const accountKeyResult = await accountKey.getSignerKey();
+  const accountKeyResult = await ed25519Signer.getSignerKey();
   if (accountKeyResult.isOk()) {
     accountPubKey = accountKeyResult.value;
 
@@ -76,13 +79,13 @@ const addSigner = async (user_id: string) => {
         address: KEY_GATEWAY_ADDRESS,
         abi: keyGatewayABI,
         functionName: "nonces",
-        args: [alice.address],
+        args: [user.address],
       });
 
       console.log("alice nonce");
 
       let aliceSignature = await aliceAccountKey.signAdd({
-        owner: alice.address,
+        owner: user.address,
         keyType: 1,
         key: accountPubKey,
         metadataType: 1,
@@ -91,7 +94,7 @@ const addSigner = async (user_id: string) => {
         deadline,
       });
 
-      console.log("alice sig");
+      console.log("user sig");
 
       if (aliceSignature.isOk()) {
         const { request } = await publicClient.simulateContract({
@@ -100,7 +103,7 @@ const addSigner = async (user_id: string) => {
           abi: keyGatewayABI,
           functionName: "addFor",
           args: [
-            alice.address,
+            user.address,
             1,
             bytesToHex(accountPubKey),
             1,
@@ -116,4 +119,4 @@ const addSigner = async (user_id: string) => {
   }
 };
 
-export default addSigner;
+export default refreshSigner;
