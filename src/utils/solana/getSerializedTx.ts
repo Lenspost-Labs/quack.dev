@@ -34,7 +34,7 @@ export const getSerializedTx = async (
   amountInSol: number,
   fromPubkey: string
 ) => {
-  const connection = new Connection("https://api.devnet.solana.com");
+  const connection = new Connection(`https://mainnet.helius-rpc.com/?api-key=${process.env.HELIUS_API_KEY}`);
   let destinationWallet = new PublicKey(DESTINATION_WALLET);
   let sourceWallet = new PublicKey(fromPubkey);
   let amountInLamports = amountInSol * LAMPORTS_PER_SOL;
