@@ -42,17 +42,17 @@ router.post("/pay", async (req, res) => {
   let publicKey = req.user?.public_address;
   let txSig = req.body.txSig;
 
-  // let accountExists = await getAccountExists(user as string);
+  let accountExists = await getAccountExists(user as string);
 
-  // if (accountExists) {
-  //   res.send({
-  //     message: "Account already exists",
-  //   });
-  //   return;
-  // }
+  if (accountExists) {
+    res.send({
+      message: "Account already exists",
+    });
+    return;
+  }
 
-  // let status = await checkTransactionStatus(txSig);
-  let status = true;
+  let status = await checkTransactionStatus(txSig);
+  // let status = true;
 
   if (status) {
     let parsedTx = await getParsedTransaction(txSig);

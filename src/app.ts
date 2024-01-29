@@ -6,6 +6,7 @@ require("dotenv").config();
 // routes
 import auth from "./routes/auth";
 import user from "./routes/user";
+import helper from "./routes/helper";
 
 // middleware
 import authenticate from "./middleware/auth";
@@ -26,6 +27,7 @@ app.use(function (req, res, next) {
 
 app.use("/auth", auth);
 app.use("/user",authenticate, user);
+app.use("/helper", authenticate,helper);
 
 app.listen(PORT);
 
