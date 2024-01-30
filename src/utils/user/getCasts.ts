@@ -1,5 +1,4 @@
 import { fc } from "../clients/fc";
-import fs from "fs";
 const getCasts = async (user_id: string) => {
   let messages = [] as string[];
   const casts = await fc.getCastsByFid({
@@ -7,7 +6,10 @@ const getCasts = async (user_id: string) => {
     pageSize: 10,
     // reverse: true,
   });
-  casts.isOk() && casts.value.messages.map((cast) => messages.push(cast.data?.castAddBody?.text as string));
+  casts.isOk() &&
+    casts.value.messages.map((cast) =>
+      messages.push(cast.data?.castAddBody?.text as string)
+    );
   return messages;
 };
 
