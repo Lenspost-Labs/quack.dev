@@ -1,27 +1,22 @@
 import {
-  ID_GATEWAY_ADDRESS,
-  ID_REGISTRY_ADDRESS,
   ViemLocalEip712Signer,
-  Eip712Signer,
-  idGatewayABI,
-  idRegistryABI,
   KEY_GATEWAY_ADDRESS,
   keyGatewayABI,
   NobleEd25519Signer,
   BUNDLER_ADDRESS,
   bundlerABI,
-  ed25519,
 } from "@farcaster/hub-nodejs";
 import { bytesToHex, createPublicClient, createWalletClient, http } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { optimism } from "viem/chains";
-import * as ed from "@noble/ed25519";
+import { decrypt } from "../../utils/auth/decrypt";
 import bs58 from "bs58";
 
 import prisma from "../clients/prisma";
 import getAccountExists from "../user/getAccountExists";
 
 import { Web3 } from "web3";
+import getFIDFromOwner from "./getFIDFromOwner";
 
 const web3 = new Web3(process.env.OP_RPC_URL);
 const hub = new web3.eth.Contract(bundlerABI, BUNDLER_ADDRESS);
@@ -29,6 +24,8 @@ const hub = new web3.eth.Contract(bundlerABI, BUNDLER_ADDRESS);
 const APP_FID = BigInt(process.env.APP_FID as string);
 
 export const createAccount = async (userId: string) => {
+  console.log("Creating account");
+
   let accStatus = await getAccountExists(userId);
   accStatus = false;
   if (accStatus) {
@@ -63,7 +60,8 @@ export const createAccount = async (userId: string) => {
     if (!user_pk) {
       console.error("User does not exist");
     }
-    const user = privateKeyToAccount(user_pk?.secret_key as `0x${string}`);
+    const user_pk_decrypted = decrypt(user_pk?.secret_key as `0x${string}`);
+    const user = privateKeyToAccount(user_pk_decrypted as `0x${string}`);
     const userKey = new ViemLocalEip712Signer(user as any);
 
     const getDeadline = () => {
@@ -158,12 +156,28 @@ export const createAccount = async (userId: string) => {
               value: price,
             });
             let tx = await walletClient.writeContract(request);
+
+            let fid = await getFIDFromOwner(user.address);
+
+            await prisma.user_metadata.upsert({
+              where: {
+                user_id: userId,
+              },
+              create: {
+                user_id: userId,
+                hasPaid: true,
+                fid: fid,
+              },
+              update: {
+                hasPaid: true,
+                fid: fid,
+              },
+            });
           }
         }
       }
     }
   }
-
   return true;
 
   // const pubKeyForUser = await ed.getPublicKey(pvtKeyBytes);

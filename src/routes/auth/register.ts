@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getPriceInEth } from "../../utils/farcaster/createAccount";
+import createAccount, { getPriceInEth } from "../../utils/farcaster/createAccount";
 import {
   getPriceInSol,
   getPriceInUSDC,
@@ -9,6 +9,7 @@ import checkTransactionStatus from "../../utils/solana/checkTransactionStatus";
 import getParsedTransaction from "../../utils/solana/getParsedTransaction";
 import updatePaidStatus from "../../utils/user/updatePaidStatus";
 import getAccountExists from "../../utils/user/getAccountExists";
+
 const router = Router();
 
 router.get("/pay", async (req, res) => {
@@ -52,7 +53,6 @@ router.post("/pay", async (req, res) => {
   }
 
   let status = await checkTransactionStatus(txSig);
-  // let status = true;
 
   if (status) {
     let parsedTx = await getParsedTransaction(txSig);
