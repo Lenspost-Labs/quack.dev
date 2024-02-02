@@ -44,6 +44,10 @@ const createCast = async (user_id: string, postData: Cast) => {
       });
     }
 
+    if(postData.embeds.length > 0) {
+      embeds = [...embeds, ...postData.embeds];
+    }
+
     const castResults = [];
     const cast = await makeCastAdd(
       {
