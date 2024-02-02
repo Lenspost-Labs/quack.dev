@@ -33,7 +33,6 @@ const createCast = async (user_id: string, postData: Cast) => {
 
     let embeds = [] as any[];
 
-    console.log(postData.text.length)
     if (postData.text.length > 300) {
       let json = {
         text: postData.text,
@@ -44,10 +43,6 @@ const createCast = async (user_id: string, postData: Cast) => {
         url: `https://ipfs.io/ipfs/${hash}`,
       });
     }
-
-    console.log(embeds)
-
-    return;
 
     const castResults = [];
     const cast = await makeCastAdd(
