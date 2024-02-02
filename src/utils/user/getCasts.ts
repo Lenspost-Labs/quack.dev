@@ -1,4 +1,3 @@
-import { as } from "@upstash/redis/zmscore-a4ec4c2a";
 import { fc } from "../clients/fc";
 import prisma from "../clients/prisma";
 const getCasts = async (user_id: string) => {
