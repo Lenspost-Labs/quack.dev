@@ -18,7 +18,7 @@ const getCasts = async (user_id: string) => {
 
   const casts = await fc.getCastsByFid({
     fid: user_fid?.fid as number,
-    pageSize: 10,
+    pageSize: 100,
     reverse: true,
   });
 
@@ -27,7 +27,6 @@ const getCasts = async (user_id: string) => {
       messages.push({
         body : cast.data?.castAddBody?.text as string,
         embeds : cast.data?.castAddBody?.embeds as any[],
-        frames : cast.data?.frameActionBody as any || {},
       })
     );
 
