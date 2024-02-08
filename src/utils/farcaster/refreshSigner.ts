@@ -16,6 +16,7 @@ import { privateKeyToAccount } from "viem/accounts";
 import { optimism } from "viem/chains";
 import prisma from "../clients/prisma";
 import bs58 from "bs58";
+import { decrypt } from "../auth/decrypt";
 
 const ACCOUNT_PRIVATE_KEY_BS58 = process.env.APP_ACCOUNT_PRIVATE_KEY as string;
 const ACCOUNT_PRIVATE_KEY = bs58.decode(ACCOUNT_PRIVATE_KEY_BS58);
@@ -42,13 +43,20 @@ const refreshSigner = async (user_id: string) => {
       user_id: user_id,
     },
     select: {
+      user: {
+        select: {
+          public_address: true,
+        }
+      },
       secret_key: true,
     },
   });
 
-  const user = privateKeyToAccount(auth?.secret_key as `0x${string}`) as any;
-  const aliceAccountKey = new ViemLocalEip712Signer(user);
-  console.log("Alice:", user.address);
+
+  const user_pk_decrypted = decrypt(auth?.secret_key as `0x${string}`);
+  const user = privateKeyToAccount(user_pk_decrypted as `0x${string}`);
+  const userAccountKey = new ViemLocalEip712Signer(user as any);
+  console.log("user:", user.address);
 
   const getDeadline = () => {
     const now = Math.floor(Date.now() / 1000);
@@ -84,7 +92,7 @@ const refreshSigner = async (user_id: string) => {
 
       console.log("alice nonce");
 
-      let aliceSignature = await aliceAccountKey.signAdd({
+      let aliceSignature = await userAccountKey.signAdd({
         owner: user.address,
         keyType: 1,
         key: accountPubKey,
