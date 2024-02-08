@@ -22,6 +22,7 @@ model user {
   public_address String         @unique
   auth           auth?
   user_metadata  user_metadata?
+  user_posts     user_posts[]
 }
 
 model user_metadata {
@@ -30,6 +31,16 @@ model user_metadata {
   hasPaid Boolean @default(false)
   bio     String?
   fid     Int?
+  email   String?
   image   String? @default("https://api.dicebear.com/7.x/pixel-art/svg?seed={{user_id}}")
   user    user    @relation(fields: [user_id], references: [id])
+}
+
+model user_posts {
+  id       Int    @id
+  user_id  String
+  text     String
+  metadata Json?
+
+  user user @relation(fields: [user_id], references: [id])
 }
