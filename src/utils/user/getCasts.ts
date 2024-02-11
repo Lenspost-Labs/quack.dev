@@ -1,7 +1,10 @@
 import { fc } from "../clients/fc";
 import prisma from "../clients/prisma";
+import getReactionForCast from "../casts/getReactionForCast";
+import { CastId } from "@farcaster/hub-nodejs";
+
 const getCasts = async (user_id: string) => {
-  let messages = [] as any[];
+  let m = [] as any[];
 
   const user_fid = await prisma.user_metadata.findUnique({
     where: {
@@ -13,7 +16,7 @@ const getCasts = async (user_id: string) => {
   });
 
   if (user_fid?.fid === undefined) {
-    return messages;
+    return m;
   }
 
   const casts = await fc.getCastsByFid({
@@ -22,15 +25,24 @@ const getCasts = async (user_id: string) => {
     reverse: true,
   });
 
-  casts.isOk() &&
-    casts.value.messages.map((cast) => 
-      messages.push({
-        body : cast.data?.castAddBody?.text as string,
-        embeds : cast.data?.castAddBody?.embeds as any[],
-      })
-    );
+  if (casts.isOk()) {
+    for (let i = 0; i < casts.value.messages.length; i++) {
+      let cast = casts.value.messages[i];
+      let reaction = await getReactionForCast(
+        CastId.create({
+          fid: user_fid?.fid as number,
+          hash: cast.hash,
+        })
+      );
+      m.push({
+        body: cast.data?.castAddBody?.text as string,
+        embeds: cast.data?.castAddBody?.embeds as any[],
+        reaction: reaction,
+      });
+    }
+  }
 
-  return messages;
+  return m;
 };
 
 export default getCasts;
