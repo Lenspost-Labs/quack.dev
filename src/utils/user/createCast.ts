@@ -2,6 +2,8 @@ import {
   makeCastAdd,
   NobleEd25519Signer,
   FarcasterNetwork,
+  MessageData,
+  getFarcasterTime,
 } from "@farcaster/hub-nodejs";
 import bs58 from "bs58";
 import prisma from "../clients/prisma";
@@ -24,11 +26,14 @@ const createCast = async (user_id: string, postData: Cast) => {
     },
   });
 
+  let timestamp = getFarcasterTime()._unsafeUnwrap();
+
   if (user_data?.fid) {
     const dataOptions = {
       fid: user_data.fid,
       network: FC_NETWORK,
-    } as any;
+      timestamp,
+    } as MessageData;
 
     let embeds = [] as any[];
 
@@ -43,7 +48,7 @@ const createCast = async (user_id: string, postData: Cast) => {
       });
     }
 
-    if(postData.embeds.length > 0) {
+    if (postData.embeds.length > 0) {
       embeds = [...embeds, ...postData.embeds];
     }
 
@@ -67,9 +72,7 @@ const createCast = async (user_id: string, postData: Cast) => {
 
     castResults.map((castAddResult) =>
       castAddResult.map(async (castAdd: any) =>
-        console.log(
-          (await fc.submitMessage(castAdd))._unsafeUnwrap().hash.toString()
-        )
+        console.log(await fc.submitMessage(castAdd))
       )
     );
   }

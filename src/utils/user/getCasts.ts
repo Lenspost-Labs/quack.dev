@@ -1,7 +1,7 @@
 import { fc } from "../clients/fc";
 import prisma from "../clients/prisma";
 import getReactionForCast from "../casts/getReactionForCast";
-import { CastId } from "@farcaster/hub-nodejs";
+import { CastId, fromFarcasterTime } from "@farcaster/hub-nodejs";
 
 const getCasts = async (user_id: string) => {
   let m = [] as any[];
@@ -38,6 +38,8 @@ const getCasts = async (user_id: string) => {
         body: cast.data?.castAddBody?.text as string,
         embeds: cast.data?.castAddBody?.embeds as any[],
         reaction: reaction,
+        timestamp : cast.data?.timestamp ? new Date(fromFarcasterTime(cast.data.timestamp)._unsafeUnwrap()).toISOString() : "",
+        hash: `0x${Buffer.from(cast.hash).toString("hex")}`,
       });
     }
   }

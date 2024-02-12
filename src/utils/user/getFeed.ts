@@ -27,6 +27,10 @@ const getFeed = async (limit?: number) => {
       embeds: casts[i].embeds,
       hash: casts[i].hash,
       timestamp: casts[i].timestamp,
+      reaction : {
+        LIKE : casts[i].reactions?.likes.length,
+        RECAST : casts[i].reactions?.recasts.length,
+      }
     });
   }
   return feed_text;
