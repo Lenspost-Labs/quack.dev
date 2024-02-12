@@ -8,7 +8,7 @@ const updateUserData = async (
   if (email) {
     await prisma.user_metadata.update({
       where: {
-        id: user_id,
+        user_id: user_id,
       },
       data: {
         email,
