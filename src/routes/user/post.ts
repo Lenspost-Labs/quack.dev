@@ -2,10 +2,11 @@ import { Router } from "express";
 import createCast from "../../utils/user/createCast";
 import getCasts from "../../utils/user/getCasts";
 import getFeed from "../../utils/user/getFeed";
+import getCast from "../../utils/user/getCast";
 
 const router = Router();
 
-router.post("/",async (req, res) => {
+router.post("/", async (req, res) => {
   let user = req.user?.id;
   let postData = req.body;
 
@@ -31,9 +32,7 @@ router.get("/feed", async (req, res) => {
 
   let feed = await getFeed(limit);
 
-  res.send({
-    feed: feed,
-  });
+  res.send(feed);
 });
 
 export default router;

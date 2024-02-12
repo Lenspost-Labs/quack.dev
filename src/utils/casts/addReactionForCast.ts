@@ -1,20 +1,23 @@
+import { fc } from "../clients/fc";
+import prisma from "../clients/prisma";
 import {
-  makeFrameAction,
+  makeReactionAdd,
   NobleEd25519Signer,
   FarcasterNetwork,
+  CastId,
 } from "@farcaster/hub-nodejs";
 import bs58 from "bs58";
-import prisma from "../clients/prisma";
-import { fc } from "../clients/fc";
-import { Cast } from "../../types";
-import { FrameActionBody } from "@farcaster/hub-nodejs";
 
 const FC_NETWORK = FarcasterNetwork.MAINNET;
 const ACCOUNT_PRIVATE_KEY_BS58 = process.env.APP_ACCOUNT_PRIVATE_KEY as string;
 const ACCOUNT_PRIVATE_KEY = bs58.decode(ACCOUNT_PRIVATE_KEY_BS58);
 const ed25519Signer = new NobleEd25519Signer(ACCOUNT_PRIVATE_KEY);
 
-const actOnFrame = async (user_id: string, actData: FrameActionBody) => {
+const addReactionForCast = async (
+  user_id: string,
+  cast_id: CastId,
+  reaction_type: number
+) => {
   let user_data = await prisma.user_metadata.findUnique({
     where: {
       user_id: user_id,
@@ -31,13 +34,10 @@ const actOnFrame = async (user_id: string, actData: FrameActionBody) => {
     } as any;
 
     const castResults = [];
-
-    const cast = await makeFrameAction(
+    const cast = await makeReactionAdd(
       {
-        buttonIndex: actData.buttonIndex,
-        castId: actData.castId,
-        inputText: actData.inputText,
-        url: actData.url,
+        targetCastId: cast_id,
+        type: reaction_type,
       },
       dataOptions,
       ed25519Signer
@@ -45,8 +45,8 @@ const actOnFrame = async (user_id: string, actData: FrameActionBody) => {
 
     castResults.push(cast);
 
-    castResults.map((castAddResult) =>
-      castAddResult.map(async (castAdd: any) =>
+    castResults.map((castReactResult) =>
+      castReactResult.map(async (castAdd: any) =>
         console.log(
           (await fc.submitMessage(castAdd))._unsafeUnwrap().hash.toString()
         )
@@ -55,4 +55,4 @@ const actOnFrame = async (user_id: string, actData: FrameActionBody) => {
   }
 };
 
-export default actOnFrame;
+export default addReactionForCast;

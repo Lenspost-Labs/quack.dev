@@ -2,7 +2,6 @@ import {
   makeCastAdd,
   NobleEd25519Signer,
   FarcasterNetwork,
-  validations,
 } from "@farcaster/hub-nodejs";
 import bs58 from "bs58";
 import prisma from "../clients/prisma";

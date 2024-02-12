@@ -1,7 +1,8 @@
 import { fc } from "../clients/fc";
 import prisma from "../clients/prisma";
+import { CastId } from "@farcaster/hub-nodejs";
 
-const getReactionForCast = async (cast_id: any) => {
+const getReactionForCast = async (cast_id: CastId) => {
 
   let r = await fc.getReactionsByCast({
     targetCastId: cast_id,
