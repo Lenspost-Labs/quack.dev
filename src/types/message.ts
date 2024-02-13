@@ -86,4 +86,29 @@ export type ReactRequest = {
   type: number;
 }
 
+export interface NeynarUserInfoResponse {
+  fid: number;
+  custodyAddress: string;
+  username: string;
+  displayName: string;
+  pfp: {
+    url: string;
+  };
+  profile: {
+    bio: {
+      text: string;
+      mentionedProfiles: any[]; 
+    };
+  };
+  followerCount: number;
+  followingCount: number;
+  verifications: string[];
+  activeStatus: "active" | "inactive"; 
+  viewerContext: {
+    following: boolean;
+    followedBy: boolean;
+  }
+}
+
+
 export { Cast, NeynarCast };

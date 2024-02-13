@@ -4,6 +4,9 @@ import { getSuggestedUsername } from "../../utils/user/getSuggestedUsername";
 import updateUserData from "../../utils/user/updateUserData";
 import followUser from "../../utils/user/followUser";
 import unFollowUser from "../../utils/user/unFollowUser";
+import doesFollow from "../../utils/user/doesFollow";
+import updateUserDataOnHub from "../../utils/user/updateUserDataOnHub";
+import getDetailsForFID from "../../utils/user/getDetailsForFID";
 
 const userRouter = Router();
 
@@ -60,6 +63,32 @@ userRouter.post("/unfollow", async (req, res) => {
   res.send({
     message: "User unfollowed",
   });
+});
+
+userRouter.get("/does-follow", async (req, res) => {
+  let user_id = req.user?.id as string;
+  let target_fid = req.query.target_fid as any as number;
+
+  let doesFollowUser = await doesFollow(user_id, target_fid);
+
+  res.send({
+    doesFollowUser,
+  });
+});
+
+userRouter.post("/metadata", async (req, res) => {
+  let user_id = req.user?.id as string;
+});
+
+userRouter.get("/about", async (req, res) => {
+  let user_id = req.user?.id as string;
+  let target_fid = req.query.target_fid as any as number;
+
+  let user_info = await getDetailsForFID(user_id,target_fid);
+
+  res.send(
+    user_info,
+  );
 });
 
 userRouter.use("/post", router);
