@@ -3,6 +3,7 @@ import createCast from "../../utils/user/createCast";
 import getCasts from "../../utils/user/getCasts";
 import getFeed from "../../utils/user/getFeed";
 import getCast from "../../utils/user/getCast";
+import deleteCast from "../../utils/user/deleteCast";
 import actOnFrame from "../../utils/user/actOnFrame";
 import addReactionForCast from "../../utils/casts/addReactionForCast";
 import removeReactionForCast from "../../utils/casts/removeReactionForCast";
@@ -18,6 +19,17 @@ router.post("/", async (req, res) => {
 
   res.send({
     message: "Cast created",
+  });
+});
+
+router.delete("/", async (req, res) => {
+  let user = req.user?.id;
+  let hash = req.query.hash as string;
+
+  await deleteCast(user as string, hash);
+
+  res.send({
+    message: "Cast deleted",
   });
 });
 

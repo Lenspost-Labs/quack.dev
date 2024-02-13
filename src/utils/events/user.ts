@@ -19,4 +19,26 @@ export const userLoginFirstTime = (user_id: string) => {
     distinctId: user_id,
     event: "user_login_first_time",
   });
-}
+};
+
+export const userCasted = (user_id: string) => {
+  posthog.capture({
+    distinctId: user_id,
+    event: "user_casted",
+  });
+};
+
+export const userReacted = (
+  user_id: string,
+  hash: string,
+  reaction: number
+) => {
+  posthog.capture({
+    distinctId: user_id,
+    properties: {
+      hash: hash,
+      reaction: reaction,
+    },
+    event: "user_reacted",
+  });
+};

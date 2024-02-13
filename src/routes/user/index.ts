@@ -2,6 +2,8 @@ import { Router } from "express";
 import router from "./post";
 import { getSuggestedUsername } from "../../utils/user/getSuggestedUsername";
 import updateUserData from "../../utils/user/updateUserData";
+import followUser from "../../utils/user/followUser";
+import unFollowUser from "../../utils/user/unFollowUser";
 
 const userRouter = Router();
 
@@ -35,6 +37,28 @@ userRouter.get("/suggested-username-pfp", async (req, res) => {
     res.send({
       username,
     });
+  });
+});
+
+userRouter.post("/follow", async (req, res) => {
+  let user_id = req.user?.id as string;
+  let target_fid = req.query.target_fid as any as number;
+
+  await followUser(user_id, target_fid);
+
+  res.send({
+    message: "User followed",
+  });
+});
+
+userRouter.post("/unfollow", async (req, res) => {
+  let user_id = req.user?.id as string;
+  let target_fid = req.query.target_fid as any as number;
+
+  await unFollowUser(user_id, target_fid);
+
+  res.send({
+    message: "User unfollowed",
   });
 });
 
