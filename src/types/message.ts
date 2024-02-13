@@ -1,3 +1,5 @@
+import { CastId } from "@farcaster/hub-nodejs";
+
 interface Cast {
   text: string;
   embeds: any[];
@@ -84,12 +86,18 @@ export type ReactRequest = {
   hash: string;
   reaction: number;
   type: number;
-}
+};
 
 export type ChildHashRequest = {
   fid: number;
   hash: string;
-}
+};
+
+export type ReplyRequest = {
+  postData: Cast;
+  parent_fid: number;
+  parent_hash: string;
+};
 
 export interface NeynarUserInfoResponse {
   fid: number;
@@ -102,18 +110,17 @@ export interface NeynarUserInfoResponse {
   profile: {
     bio: {
       text: string;
-      mentionedProfiles: any[]; 
+      mentionedProfiles: any[];
     };
   };
   followerCount: number;
   followingCount: number;
   verifications: string[];
-  activeStatus: "active" | "inactive"; 
+  activeStatus: "active" | "inactive";
   viewerContext: {
     following: boolean;
     followedBy: boolean;
-  }
+  };
 }
-
 
 export { Cast, NeynarCast };
