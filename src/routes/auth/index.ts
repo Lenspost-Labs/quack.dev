@@ -62,11 +62,21 @@ authRouter.post("/", async (req, res) => {
 
       let evm_add = await getOrCreatePublicKey(ownerData.id);
 
+      let user_fid = await prisma.user_metadata.findUnique({
+        where: {
+          user_id: ownerData.id,
+        },
+        select: {
+          fid: true,
+        },
+      });
+
       let jwt = generateJWT({
         id: ownerData.id,
         usernamee: ownerData.username,
         public_address: ownerData.public_address,
         evm_address: evm_add,
+        fid: user_fid?.fid || "",
       });
 
       //   if (!user_id) sendLogin(ownerData.id, ownerData.username);
@@ -74,6 +84,7 @@ authRouter.post("/", async (req, res) => {
         jwt,
         userId: ownerData.id,
         username: ownerData.username || "",
+        fid: user_fid?.fid || "",
       });
     }
   } catch (error) {
