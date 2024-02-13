@@ -1,19 +1,32 @@
 import { fc } from "../clients/fc";
 import prisma from "../clients/prisma";
 import getReactionForCast from "../casts/getReactionForCast";
-import { CastId } from "@farcaster/hub-nodejs";
+import { CastId, fromFarcasterTime } from "@farcaster/hub-nodejs";
 
-const getCast = async (user_id: string) => {
+const getCast = async (castId: CastId) => {
   let m = [] as any[];
-  user_id = "b32c8d86-b7c1-4840-82ce-c6e9c0f53dd8";
 
-  let cast = await fc.getCast({
-    fid: 11889,
-    hash: new Uint8Array(Buffer.from("dacad42adc25b56e791c164043250a72075f8f7c", "hex")),
-  });
+  let cast = await fc.getCast(castId);
 
   if (cast.isOk()) {
-    console.log(cast.value.data?.castAddBody);
+    let reaction = await getReactionForCast(
+      CastId.create({
+        fid: cast.value.data?.fid as number,
+        hash: cast.value.hash,
+      })
+    );
+
+    m.push({
+      body: cast.value.data?.castAddBody?.text as string,
+      embeds: cast.value.data?.castAddBody?.embeds as any[],
+      reaction: reaction,
+      timestamp: cast.value.data?.timestamp
+        ? new Date(
+            fromFarcasterTime(cast.value.data.timestamp)._unsafeUnwrap()
+          ).toISOString()
+        : "",
+      hash: `0x${Buffer.from(cast.value.hash).toString("hex")}`,
+    });
   }
 
   return m;

@@ -7,7 +7,8 @@ import deleteCast from "../../utils/user/deleteCast";
 import actOnFrame from "../../utils/user/actOnFrame";
 import addReactionForCast from "../../utils/casts/addReactionForCast";
 import removeReactionForCast from "../../utils/casts/removeReactionForCast";
-import { ReactRequest } from "../../types";
+import { ReactRequest, ChildHashRequest } from "../../types";
+import getCommentsForCast from "../../utils/casts/getCommentsForCast";
 
 const router = Router();
 
@@ -97,6 +98,40 @@ router.post("/frame", async (req, res) => {
   res.send({
     message: "Frame action submitted",
   });
+});
+
+router.get("/child", async (req, res) => {
+  let user_id = req.user?.id as string;
+  let { fid, hash } = req.body as ChildHashRequest;
+  (fid && hash) || res.status(400).send({ message: "Missing parameters" });
+
+  hash = hash.replace("0x", "");
+
+  let castId = {
+    fid,
+    hash: new Uint8Array(Buffer.from(hash, "hex")),
+  };
+
+  let child_response = await getCommentsForCast(castId);
+  res.send(child_response);
+});
+
+
+router.get("/cast", async (req, res) => {
+  let user = req.user?.id;
+  let { fid, hash } = req.body as ChildHashRequest;
+  (fid && hash) || res.status(400).send({ message: "Missing parameters" });
+
+  hash = hash.replace("0x", "");
+
+  let castId = {
+    fid,
+    hash: new Uint8Array(Buffer.from(hash, "hex")),
+  };
+
+  let cast = await getCast(castId);
+
+  res.send(cast);
 });
 
 export default router;

@@ -86,6 +86,11 @@ export type ReactRequest = {
   type: number;
 }
 
+export type ChildHashRequest = {
+  fid: number;
+  hash: string;
+}
+
 export interface NeynarUserInfoResponse {
   fid: number;
   custodyAddress: string;
