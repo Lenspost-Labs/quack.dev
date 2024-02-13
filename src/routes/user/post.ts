@@ -13,125 +13,140 @@ import getCommentsForCast from "../../utils/casts/getCommentsForCast";
 const router = Router();
 
 router.post("/", async (req, res) => {
-  let user = req.user?.id;
-  let postData = req.body;
+  try {
+    let user = req.user?.id;
+    let postData = req.body;
 
-  await createCast(user as string, postData);
+    if (!user) {
+      return res.status(401).send({ message: "Unauthorized" });
+    }
 
-  res.send({
-    message: "Cast created",
-  });
+    await createCast(user, postData);
+
+    res.send({ message: "Cast created" });
+  } catch (error) {
+    res.status(500).send({ message: "Failed to create cast" });
+  }
 });
 
 router.delete("/", async (req, res) => {
-  let user = req.user?.id;
-  let hash = req.query.hash as string;
+  try {
+    let user = req.user?.id;
+    let hash = req.query.hash as string;
 
-  await deleteCast(user as string, hash);
+    if (!user || !hash) {
+      return res.status(400).send({ message: "Missing parameters" });
+    }
 
-  res.send({
-    message: "Cast deleted",
-  });
+    await deleteCast(user, hash);
+
+    res.send({ message: "Cast deleted" });
+  } catch (error) {
+    res.status(500).send({ message: "Failed to delete cast" });
+  }
 });
 
 router.post("/react", async (req, res) => {
-  let { fid, hash, reaction, type } = req.body as ReactRequest;
-  let user_id = req.user?.id as string;
+  try {
+    let { fid, hash, reaction, type } = req.body as ReactRequest;
+    let user_id = req.user?.id;
 
-  (fid && hash && reaction) ||
-    res.status(400).send({ message: "Missing parameters" });
+    if (!fid || !hash || !reaction || typeof user_id === 'undefined') {
+      return res.status(400).send({ message: "Missing parameters" });
+    }
 
-  reaction === 1 ||
-    reaction === 2 ||
-    res.status(400).send({ message: "Invalid reaction" });
+    if (reaction !== 1 && reaction !== 2) {
+      return res.status(400).send({ message: "Invalid reaction" });
+    }
 
-  hash = hash.replace("0x", "");
+    hash = hash.replace("0x", "");
 
-  let castId = {
-    fid,
-    hash: new Uint8Array(Buffer.from(hash, "hex")),
-  };
+    let castId = {
+      fid,
+      hash: new Uint8Array(Buffer.from(hash, "hex")),
+    };
 
-  type == 1
-    ? await addReactionForCast(user_id, castId, reaction)
-    : type == -1
-    ? await removeReactionForCast(user_id, castId, reaction)
-    : res.status(400).send({ message: "Invalid type" });
+    if (type === 1) {
+      await addReactionForCast(user_id, castId, reaction);
+    } else if (type === -1) {
+      await removeReactionForCast(user_id, castId, reaction);
+    } else {
+      return res.status(400).send({ message: "Invalid type" });
+    }
 
-  res.send({
-    message: `Reaction ${reaction} submitted`,
-  });
+    res.send({ message: `Reaction ${reaction} submitted` });
+  } catch (error) {
+    res.status(500).send({ message: "Failed to process reaction" });
+  }
 });
 
-router.get("/", async (req, res) => {
-  let user = req.user?.id;
-  let casts = await getCasts(user as string);
+router.get("/", async (req, res) => { 
+  try {
+    let user = req.user?.id;
 
-  res.send({
-    casts: casts,
-  });
+    if (!user) {
+      return res.status(401).send({ message: "Unauthorized" });
+    }
+
+    let casts = await getCasts(user);
+
+    res.send({ casts });
+  } catch (error) {
+    res.status(500).send({ message: "Failed to get casts" });
+  }
 });
 
 router.get("/feed", async (req, res) => {
-  let user = req.user?.id;
-  let limit = parseInt(req.query.limit as string);
+  try {
+    let user = req.user?.id;
+    let limit = parseInt(req.query.limit as string) || 10; // Provide a default limit
 
-  let feed = await getFeed(limit);
+    let feed = await getFeed(limit); 
 
-  res.send(feed);
+    res.send(feed);
+  } catch (error) {
+    res.status(500).send({ message: "Failed to get feed" });
+  }
 });
 
 router.post("/frame", async (req, res) => {
-  let user_id = req.user?.id as string;
-  let { hash, castId, buttonIndex, inputText, url } = req.body;
+  try {
+    let user_id = req.user?.id;
+    let { hash, castId, buttonIndex, inputText, url } = req.body;
 
-  (hash && castId && buttonIndex && url) ||
-    res.status(400).send({ message: "Missing parameters" });
+    if (!hash || !castId || typeof buttonIndex === 'undefined' || !url || typeof user_id === 'undefined') {
+      return res.status(400).send({ message: "Missing parameters" });
+    }
 
-  await actOnFrame(user_id, {
-    buttonIndex: buttonIndex,
-    castId: castId,
-    inputText: inputText,
-    url: url,
-  });
+    await actOnFrame(user_id, { buttonIndex, castId, inputText, url });
 
-  res.send({
-    message: "Frame action submitted",
-  });
+    res.send({ message: "Frame action submitted" });
+  } catch (error) {
+    res.status(500).send({ message: "Failed to perform frame action" });
+  }
 });
 
 router.get("/child", async (req, res) => {
-  let user_id = req.user?.id as string;
-  let { fid, hash } = req.body as ChildHashRequest;
-  (fid && hash) || res.status(400).send({ message: "Missing parameters" });
+  try {
+    let user_id = req.user?.id;
+    let { fid, hash } = req.query as any as ChildHashRequest; // Adjusted to use req.query
 
-  hash = hash.replace("0x", "");
+    if (!fid || !hash || typeof user_id === 'undefined') {
+      return res.status(400).send({ message: "Missing parameters" });
+    }
 
-  let castId = {
-    fid,
-    hash: new Uint8Array(Buffer.from(hash, "hex")),
-  };
+    hash = hash.replace("0x", "");
 
-  let child_response = await getCommentsForCast(castId);
-  res.send(child_response);
-});
+    let castId = {
+      fid,
+      hash: new Uint8Array(Buffer.from(hash, "hex")),
+    };
 
-
-router.get("/cast", async (req, res) => {
-  let user = req.user?.id;
-  let { fid, hash } = req.body as ChildHashRequest;
-  (fid && hash) || res.status(400).send({ message: "Missing parameters" });
-
-  hash = hash.replace("0x", "");
-
-  let castId = {
-    fid,
-    hash: new Uint8Array(Buffer.from(hash, "hex")),
-  };
-
-  let cast = await getCast(castId);
-
-  res.send(cast);
+    let child_response = await getCommentsForCast(castId); 
+    res.send(child_response);
+  } catch (error) {
+    res.status(500).send({ message: "Failed to get comments for cast" });
+  }
 });
 
 export default router;
