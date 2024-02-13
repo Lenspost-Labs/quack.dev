@@ -96,6 +96,29 @@ router.get("/", async (req, res) => {
   }
 });
 
+router.get("/cast", async (req, res) => {
+  try {
+    let user_id = req.user?.id;
+  
+    let { fid, hash } = req.body as ChildHashRequest; // Adjusted to use req.query
+
+    if (!fid || !hash || typeof user_id === 'undefined') {
+      return res.status(400).send({ message: "Missing parameters" });
+    }
+
+    hash = hash.replace("0x", "");
+
+    let cast = await getCast({
+      fid,
+      hash: new Uint8Array(Buffer.from(hash, "hex")),
+    });
+
+    res.send(cast);
+  } catch (error) {
+    res.status(500).send({ message: "Failed to get cast" });
+  }
+});
+
 router.get("/feed", async (req, res) => {
   try {
     let user = req.user?.id;
@@ -129,7 +152,10 @@ router.post("/frame", async (req, res) => {
 router.get("/child", async (req, res) => {
   try {
     let user_id = req.user?.id;
-    let { fid, hash } = req.query as any as ChildHashRequest; // Adjusted to use req.query
+    let { fid, hash } = req.body as ChildHashRequest; // Adjusted to use req.query
+
+    console.log(fid, hash, user_id);
+
 
     if (!fid || !hash || typeof user_id === 'undefined') {
       return res.status(400).send({ message: "Missing parameters" });
@@ -137,11 +163,13 @@ router.get("/child", async (req, res) => {
 
     hash = hash.replace("0x", "");
 
+    console.log(hash)
+
     let castId = {
       fid,
       hash: new Uint8Array(Buffer.from(hash, "hex")),
     };
-
+ 
     let child_response = await getCommentsForCast(castId); 
     res.send(child_response);
   } catch (error) {
