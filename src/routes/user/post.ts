@@ -5,6 +5,8 @@ import getFeed from "../../utils/user/getFeed";
 import getCast from "../../utils/user/getCast";
 import actOnFrame from "../../utils/user/actOnFrame";
 import addReactionForCast from "../../utils/casts/addReactionForCast";
+import removeReactionForCast from "../../utils/casts/removeReactionForCast";
+import { ReactRequest } from "../../types";
 
 const router = Router();
 
@@ -20,20 +22,31 @@ router.post("/", async (req, res) => {
 });
 
 router.post("/react", async (req, res) => {
-  let { castId, reaction } = req.body;
+  let { fid, hash, reaction, type } = req.body as ReactRequest;
   let user_id = req.user?.id as string;
 
-  (castId && reaction) ||
+  (fid && hash && reaction) ||
     res.status(400).send({ message: "Missing parameters" });
 
   reaction === 1 ||
     reaction === 2 ||
     res.status(400).send({ message: "Invalid reaction" });
 
-  await addReactionForCast(user_id, castId, reaction);
+  hash = hash.replace("0x", "");
+
+  let castId = {
+    fid,
+    hash: new Uint8Array(Buffer.from(hash, "hex")),
+  };
+
+  type == 1
+    ? await addReactionForCast(user_id, castId, reaction)
+    : type == -1
+    ? await removeReactionForCast(user_id, castId, reaction)
+    : res.status(400).send({ message: "Invalid type" });
 
   res.send({
-    message: "Reaction added",
+    message: `Reaction ${reaction} submitted`,
   });
 });
 

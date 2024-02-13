@@ -79,4 +79,11 @@ interface Replies {
   count: number;
 }
 
+export type ReactRequest = {
+  fid: number;
+  hash: string;
+  reaction: number;
+  type: number;
+}
+
 export { Cast, NeynarCast };
