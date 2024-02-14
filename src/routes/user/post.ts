@@ -102,7 +102,7 @@ router.get("/cast", async (req, res) => {
   try {
     let user_id = req.user?.id;
 
-    let { fid, hash } = req.body as ChildHashRequest; // Adjusted to use req.query
+    let { fid, hash } = req.query as any as ChildHashRequest; // Adjusted to use req.query
 
     if (!fid || !hash || typeof user_id === "undefined") {
       return res.status(400).send({ message: "Missing parameters" });
@@ -117,6 +117,7 @@ router.get("/cast", async (req, res) => {
 
     res.send(cast);
   } catch (error) {
+    console.log(error);
     res.status(500).send({ message: "Failed to get cast" });
   }
 });
