@@ -31,6 +31,7 @@ export default function authenticate(req: Request, res: Response, next: NextFunc
     const decoded = jsonwebtoken.verify(token, process.env.JWT_SECRET_KEY as string);
     if (typeof decoded === 'object') {
       req.user = decoded as user;
+      console.log(req.body, req.user.id)
       next();
     } else {
       return res.status(401).json({
