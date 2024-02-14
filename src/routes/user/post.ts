@@ -10,6 +10,7 @@ import removeReactionForCast from "../../utils/casts/removeReactionForCast";
 import { ReactRequest, ChildHashRequest, ReplyRequest } from "../../types";
 import getCommentsForCast from "../../utils/casts/getCommentsForCast";
 import replyToCast from "../../utils/user/replyToCast";
+import getCastsForFID from "../../utils/user/getCastsForFID";
 
 const router = Router();
 
@@ -202,6 +203,20 @@ router.post("/reply", async (req, res) => {
     console.log(error);
     res.status(500).send({ message: "Failed to submit reply" });
   }
+});
+
+router.get("/for-fid", async (req, res) => {
+  let fid = req.query.fid as string;
+
+  let user = req.user?.id;
+
+  if (!fid) {
+    return res.status(400).send({ message: "Missing parameters" });
+  }
+
+  let details = await getCastsForFID(parseInt(fid));
+
+  res.send(details);
 });
 
 export default router;
