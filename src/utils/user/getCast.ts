@@ -16,6 +16,8 @@ const getCast = async (castId: CastId) => {
       })
     );
 
+    let parent_cast = Buffer.from((cast.value.data?.castAddBody?.parentCastId?.hash || []) as Uint8Array).toString("hex");
+
     m.push({
       body: cast.value.data?.castAddBody?.text as string,
       embeds: cast.value.data?.castAddBody?.embeds as any[],
@@ -26,11 +28,11 @@ const getCast = async (castId: CastId) => {
           ).toISOString()
         : "",
       hash: `0x${Buffer.from(cast.value.hash).toString("hex")}`,
-      parentCast : `0x${Buffer.from(cast.value.data?.castAddBody?.parentCastId?.hash as Uint8Array).toString("hex")}`
+      parentCast : parent_cast
     });
   }
 
   return m;
-};
+}; 
 
 export default getCast;
