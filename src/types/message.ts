@@ -123,4 +123,31 @@ export interface NeynarUserInfoResponse {
   };
 }
 
-export { Cast, NeynarCast };
+type NeynarUser = {
+  object: string;
+  fid: number;
+  custody_address: string;
+  username: string;
+  display_name: string | null;
+  pfp_url: string;
+  profile: UserProfile;
+  follower_count: number;
+  following_count: number;
+  verifications: string[];
+  active_status: string;
+  pfp: UserPfp;
+};
+
+type UserProfile = {
+  bio: UserBio;
+};
+
+type UserBio = {
+  text: string;
+};
+
+type UserPfp = {
+  url: string;
+};
+
+export { Cast, NeynarCast , NeynarUser };

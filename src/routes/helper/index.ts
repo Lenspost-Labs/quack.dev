@@ -2,6 +2,7 @@ import { Router } from "express";
 import imagekit from "../../utils/clients/imagekit";
 import axios from "axios";
 import cheerio from "cheerio";
+import searchUsername from "../../utils/user/searchUsername";
 const router = Router();
 
 router.get("/image", async (req, res) => {
@@ -24,8 +25,6 @@ router.get('/fetch-og', async (req, res) => {
           const property = $(element).attr('property');
           const content = $(element).attr('content');
 
-          console.log(property, content);
-
           if (property && (property.includes('og:') || property?.includes('fc:')) && content) {
               ogTags[property] = content;
           }
@@ -36,6 +35,22 @@ router.get('/fetch-og', async (req, res) => {
       console.error(error);
       res.status(500).send({ error: 'Failed to fetch or parse the URL.' });
   }
+});
+
+router.get('/search-username', async (req, res) => {
+    const q = req.query.q as string;
+
+    if (!q) {
+        return res.status(400).send({ error: 'q query parameter is required.' });
+    }
+
+    try {
+        let search = await searchUsername(q)
+        res.send(search);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send({ error: 'Failed to fetch or parse the URL.' });
+    }
 });
 
 export default router;
