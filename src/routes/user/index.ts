@@ -15,6 +15,7 @@ userRouter.get("/", (req, res) => {
 });
 
 userRouter.post("/set-username-email", async (req, res) => {
+  try{ 
   let user_id = req.user?.id as string;
   let { username, email } = req.body;
 
@@ -32,6 +33,12 @@ userRouter.post("/set-username-email", async (req, res) => {
   res.send({
     message: "User data updated successfully",
   });
+} catch (e) {
+  console.log(e);
+  res.status(500).send({
+    message: "Internal server error",
+  });
+}
 });
 
 userRouter.get("/suggested-username-pfp", async (req, res) => {
