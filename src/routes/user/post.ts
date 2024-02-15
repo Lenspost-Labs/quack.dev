@@ -135,14 +135,14 @@ router.get("/feed", async (req, res) => {
   }
 });
 
-router.post("/frame", async (req, res) => {
+router.post("/act", async (req, res) => {
   try {
     let user_id = req.user?.id;
-    let { hash, castId, buttonIndex, inputText, url } = req.body;
+    let { hash, fid, buttonIndex, inputText, url } = req.body;
 
     if (
       !hash ||
-      !castId ||
+      !fid ||
       typeof buttonIndex === "undefined" ||
       !url ||
       typeof user_id === "undefined"
@@ -150,7 +150,17 @@ router.post("/frame", async (req, res) => {
       return res.status(400).send({ message: "Missing parameters" });
     }
 
-    await actOnFrame(user_id, { buttonIndex, castId, inputText, url });
+    hash = hash.replace("0x", "");
+
+    let castId = {
+      fid,
+      hash: new Uint8Array(Buffer.from(hash, "hex")),
+    };
+
+    let post_url = url
+    url = new Uint8Array(Buffer.from(url))
+
+    await actOnFrame(user_id, { buttonIndex, castId, inputText, url }, post_url);
 
     res.send({ message: "Frame action submitted" });
   } catch (error) {

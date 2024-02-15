@@ -40,6 +40,7 @@ const getCasts = async (user_id: string) => {
         reaction: reaction,
         timestamp : cast.data?.timestamp ? new Date(fromFarcasterTime(cast.data.timestamp)._unsafeUnwrap()).toISOString() : "",
         hash: `0x${Buffer.from(cast.hash).toString("hex")}`,
+        fid: cast.data?.fid
       });
     }
   }

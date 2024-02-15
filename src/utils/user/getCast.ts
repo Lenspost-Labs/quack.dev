@@ -28,7 +28,8 @@ const getCast = async (castId: CastId) => {
           ).toISOString()
         : "",
       hash: `0x${Buffer.from(cast.value.hash).toString("hex")}`,
-      parentCast : parent_cast
+      parentCast : parent_cast,
+      fid: cast.value.data?.fid
     });
   }
 

@@ -31,6 +31,10 @@ const getCastsForFID = async (fid: number) => {
     }
   }
 
+  if(casts.isErr()) {
+    console.log(casts.error);
+  }
+
   return m;
 };
 
