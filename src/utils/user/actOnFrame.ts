@@ -2,6 +2,7 @@ import {
   makeFrameAction,
   NobleEd25519Signer,
   FarcasterNetwork,
+  Message
 } from "@farcaster/hub-nodejs";
 import bs58 from "bs58";
 import prisma from "../clients/prisma";
@@ -46,8 +47,10 @@ const actOnFrame = async (
       ed25519Signer
     );
 
-    console.log(cast._unsafeUnwrap().signature.toString());
-    console.log(post_url);
+    const trustedBytes = Buffer.from(
+      Message.encode(cast._unsafeUnwrap()).finish()
+    ).toString("hex");
+
 
     let res = axios.post(post_url, {
       untrustedData: {
@@ -58,10 +61,10 @@ const actOnFrame = async (
         url: actData.url,
       },
       trustedData: {
-        messageBytes: cast._unsafeUnwrap().signature.toString(),
+        messageBytes: trustedBytes,
       },
     });
-    console.log(res);
+
   }
 };
 

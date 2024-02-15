@@ -27,7 +27,7 @@ const getDetailsForFID = async (user_id: string, target_fid: number) => {
   return {
     fid: user_info.fid,
     username: user_info.username,
-    displayName: user_info.displayName,
+    name: user_info.displayName,
     bio: user_info.profile.bio,
     follower: user_info.followerCount,
     following: user_info.followingCount,
