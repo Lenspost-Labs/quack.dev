@@ -125,9 +125,10 @@ router.get("/cast", async (req, res) => {
 router.get("/feed", async (req, res) => {
   try {
     let user = req.user?.id;
-    let limit = parseInt(req.query.limit as string) || 10; // Provide a default limit
+    let cursor = req.query.cursor as string;
+    let limit = parseInt(req.query.limit as string); // Provide a default limit
 
-    let feed = await getFeed(limit);
+    let feed = await getFeed(limit, cursor);
 
     res.send(feed);
   } catch (error) {
