@@ -1,12 +1,17 @@
-import { TldParser } from "@onsol/tldparser";
 import prisma from "../clients/prisma";
 import { Connection, PublicKey } from "@solana/web3.js";
+
+import {
+  walletAddressToDotAnything,
+  walletAddressToDotBackpack,
+  walletAddressToDotSol,
+} from "../sol-wallet-names";
+
 export const getSuggestedUsername = async (user_id: string) => {
   const connection = new Connection(
     `https://mainnet.helius-rpc.com/?api-key=${process.env.HELIUS_API_KEY}`
   );
 
-  const parser = new TldParser(connection);
   const user = await prisma.user.findUnique({
     where: {
       id: user_id,
@@ -15,16 +20,15 @@ export const getSuggestedUsername = async (user_id: string) => {
       public_address: true,
     },
   });
-  let username = [] as string[];
-  console.log(user);
 
-  let wallet = new PublicKey("4vDHQPxjLsCWcAUCaWP8wqLFvv35FTCQZFf31nHCCCkF");
 
-  let allDomais = await parser.getParsedAllUserDomains(wallet);
-  allDomais.forEach((domain) => {
-    username.includes(domain.domain.split(".")[0]) ||
-    username.push(domain.domain.split(".")[0]);
-  });
+  const walletAddress = new PublicKey(user?.public_address as string);
 
-  return username;
+  let r0 = await walletAddressToDotSol(connection, walletAddress);
+  let r1 = await walletAddressToDotBackpack(walletAddress);
+  let r2 = await walletAddressToDotAnything(connection, walletAddress);
+
+  return [r0.walletName, r1.walletName, r2.walletName].filter(
+    (x) => x !== null
+  );
 };

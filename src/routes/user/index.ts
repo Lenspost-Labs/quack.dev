@@ -43,11 +43,8 @@ userRouter.post("/set-username-email", async (req, res) => {
 
 userRouter.get("/suggested-username-pfp", async (req, res) => {
   let user_id = req.user?.id;
-  getSuggestedUsername(user_id as string).then((username: string[]) => {
-    res.send({
-      username,
-    });
-  });
+ let username = await getSuggestedUsername(user_id as string)
+ res.send(username);
 });
 
 userRouter.post("/follow", async (req, res) => {
