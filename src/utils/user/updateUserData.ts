@@ -6,17 +6,21 @@ const updateUserData = async (
   email?: string
 ) => {
   if (email) {
-    await prisma.user_metadata.update({
+    await prisma.user_metadata.upsert({
       where: {
         user_id: user_id,
       },
-      data: {
+      update: {
+        email,
+      },
+      create: {
+        user_id,
         email,
       },
     });
     return true;
   }
-  
+
   let user = await prisma.user.findUnique({
     where: {
       username,
