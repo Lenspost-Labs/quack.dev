@@ -161,9 +161,9 @@ router.post("/act", async (req, res) => {
     let post_url = url
     url = new Uint8Array(Buffer.from(url))
 
-    await actOnFrame(user_id, { buttonIndex, castId, inputText, url }, post_url);
+    let data = await actOnFrame(user_id, { buttonIndex, castId, inputText, url }, post_url);
 
-    res.send({ message: "Frame action submitted" });
+    res.send({ message: "Frame action submitted" , data });
   } catch (error) {
     res.status(500).send({ message: "Failed to perform frame action" });
   }

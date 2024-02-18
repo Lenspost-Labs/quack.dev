@@ -2,7 +2,7 @@ import {
   makeFrameAction,
   NobleEd25519Signer,
   FarcasterNetwork,
-  Message
+  Message,
 } from "@farcaster/hub-nodejs";
 import bs58 from "bs58";
 import prisma from "../clients/prisma";
@@ -34,8 +34,6 @@ const actOnFrame = async (
       network: FC_NETWORK,
     } as any;
 
-    const castResults = [];
-
     const cast = await makeFrameAction(
       {
         buttonIndex: actData.buttonIndex,
@@ -51,8 +49,7 @@ const actOnFrame = async (
       Message.encode(cast._unsafeUnwrap()).finish()
     ).toString("hex");
 
-
-    let res = axios.post(post_url, {
+    let res = await axios.post(post_url, {
       untrustedData: {
         fid: user_data.fid,
         buttonIndex: actData.buttonIndex,
@@ -65,6 +62,7 @@ const actOnFrame = async (
       },
     });
 
+    return res.data;
   }
 };
 
