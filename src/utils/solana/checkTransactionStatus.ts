@@ -1,10 +1,12 @@
 import { Connection, TransactionSignature } from "@solana/web3.js";
 import getParsedTransaction from "./getParsedTransaction";
 
+const SOLANA_RPC_URL = `https://mainnet.helius-rpc.com/?api-key=${process.env.HELIUS_API_KEY}`
+
 async function checkTransactionStatus(
   txSignature: TransactionSignature
 ): Promise<boolean> {
-  const connection = new Connection(process.env.SOLANA_RPC_URL as string);
+  const connection = new Connection(SOLANA_RPC_URL);
 
   let retries = 5;
   while (true) {

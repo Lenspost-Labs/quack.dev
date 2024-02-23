@@ -8,6 +8,7 @@ const getFeed = async (limit?: number, cursor?: string) => {
   const feed_api =
     `https://api.neynar.com/v2/farcaster/feed/frames?limit=${limit}` +
     (cursor ? `&cursor=${cursor}` : "");
+
   const feed = await axios.get(feed_api, {
     headers: {
       api_key: process.env.NEYNAR_API_KEY as string,

@@ -45,7 +45,9 @@ router.post("/pay", async (req, res) => {
 
   let accountExists = await getAccountExists(user as string);
 
-  if (accountExists) {
+  console.log(accountExists)
+
+  if (accountExists.fid) {
     res.send({
       message: "Account already exists",
     });
@@ -54,13 +56,23 @@ router.post("/pay", async (req, res) => {
 
   let status = await checkTransactionStatus(txSig);
 
+  console.log(status)
+
   if (status) {
     let parsedTx = await getParsedTransaction(txSig);
-    await updatePaidStatus(
+    console.log(parsedTx)
+    let fid = await updatePaidStatus(
       user as string,
       publicKey as string,
       parsedTx as string
     );
+    console.log(fid)
+
+    res.send({
+      status: status,
+      fid: fid,
+    });
+    return;
   }
 
   res.send({

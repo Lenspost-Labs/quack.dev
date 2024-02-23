@@ -7,10 +7,14 @@ const getAccountExists = async (userId: string) => {
     },
     select: {
       hasPaid: true,
+      fid: true,
     },
   });
 
-  return accStatus?.hasPaid || false;
+  return {
+    hasPaid: accStatus?.hasPaid,
+    fid: accStatus?.fid,
+  };
 };
 
 export default getAccountExists;

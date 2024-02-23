@@ -23,13 +23,13 @@ const hub = new web3.eth.Contract(bundlerABI, BUNDLER_ADDRESS);
 
 const APP_FID = BigInt(process.env.APP_FID as string);
 
-export const createAccount = async (userId: string) => {
+export const createAccount = async (userId: string)  => {
   console.log("Creating account");
 
   let accStatus = await getAccountExists(userId);
-  accStatus = false;
-  if (accStatus) {
+  if (accStatus.fid) {
     console.error("Account already exists");
+    return accStatus.fid;
   } else {
     const publicClient = createPublicClient({
       chain: optimism,
@@ -157,6 +157,11 @@ export const createAccount = async (userId: string) => {
             });
             let tx = await walletClient.writeContract(request);
 
+            let recipet = await publicClient.waitForTransactionReceipt({
+              confirmations: 1,
+              hash: tx,
+            });
+
             let fid = await getFIDFromOwner(user.address);
 
             await prisma.user_metadata.upsert({
@@ -173,12 +178,15 @@ export const createAccount = async (userId: string) => {
                 fid: fid,
               },
             });
+
+            return fid;
           }
         }
       }
     }
   }
-  return true;
+
+  return accStatus.fid;
 
   // const pubKeyForUser = await ed.getPublicKey(pvtKeyBytes);
   // way to make a solana keypair
