@@ -40,6 +40,7 @@ const actOnFrame = async (
         castId: actData.castId,
         inputText: actData.inputText,
         url: actData.url,
+        state: actData.state,
       },
       dataOptions,
       ed25519Signer

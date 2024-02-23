@@ -1,5 +1,6 @@
 import { fc } from "../clients/fc";
 import prisma from "../clients/prisma";
+import redis from "../clients/redis";
 
 const doesFollow = async (user_id: string, target_fid: number) => {
   let m = [] as any[];

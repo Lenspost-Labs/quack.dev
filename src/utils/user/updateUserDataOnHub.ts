@@ -7,8 +7,8 @@ import {
 import bs58 from "bs58";
 import prisma from "../clients/prisma";
 import { fc } from "../clients/fc";
-import { Cast } from "../../types";
-import { FrameActionBody } from "@farcaster/hub-nodejs";
+
+
 
 const FC_NETWORK = FarcasterNetwork.MAINNET;
 const ACCOUNT_PRIVATE_KEY_BS58 = process.env.APP_ACCOUNT_PRIVATE_KEY as string;
