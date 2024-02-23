@@ -18,7 +18,7 @@ router.get("/pay", async (req, res) => {
 
   let accountExists = await getAccountExists(user as string);
 
-  if (accountExists) {
+  if (accountExists.fid) {
     res.send({
       message: "Account already exists",
     });
