@@ -1,5 +1,5 @@
 # Use the official Node.js LTS (Long Term Support) image as the base image
-FROM node:lts
+FROM node:20
 
 # Set the working directory inside the container
 WORKDIR /app
